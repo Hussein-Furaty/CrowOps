@@ -2,6 +2,7 @@ package com.crowops.backend.modules.server.service;
 
 import com.crowops.backend.modules.server.dto.CreateServerRequest;
 import com.crowops.backend.modules.server.dto.ServerResponse;
+import com.crowops.backend.modules.server.dto.UpdateServerRequest;
 import com.crowops.backend.modules.server.entity.Server;
 import com.crowops.backend.modules.server.repository.ServerRepository;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,38 @@ public class ServerService {
 
         Server savedServer = serverRepository.save(server);
         return toResponse(savedServer);
+    }
+
+    @Transactional(readOnly = true)
+    public ServerResponse findById(Long id) {
+        Server server = serverRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Server not found"));
+        return toResponse(server);
+    }
+
+    @Transactional
+    public ServerResponse updateServer(Long id, UpdateServerRequest request) {
+        Server server = serverRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Server not found"));
+
+        server.setName(request.getName());
+        server.setHostname(request.getHostname());
+        server.setSshPort(request.getSshPort());
+        server.setOs(request.getOs());
+        server.setArchitecture(request.getArchitecture());
+        server.setDescription(request.getDescription());
+        server.setEnabled(request.isEnabled());
+
+        Server savedServer = serverRepository.save(server);
+        return toResponse(savedServer);
+    }
+
+    @Transactional
+    public void deleteServer(Long id) {
+        if (!serverRepository.existsById(id)) {
+            throw new IllegalArgumentException("Server not found");
+        }
+        serverRepository.deleteById(id);
     }
 
     private ServerResponse toResponse(Server server) {
