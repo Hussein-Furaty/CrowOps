@@ -1,29 +1,43 @@
-# Code of Conduct
+# Contributor Covenant Code of Conduct
 
 ## Our Pledge
 
-We are committed to fostering an open, welcoming, and respectful community for everyone.
+We as members, contributors, and maintainers pledge to make participation in our project and community a harassment-free experience for everyone, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
 
 ## Our Standards
 
-Examples of positive behavior include:
+**Examples of behavior that contributes to a positive environment:**
 
-- Being respectful and professional.
-- Accepting constructive feedback.
-- Helping others learn.
-- Focusing on what is best for the project.
+- Using welcoming and inclusive language.
+- Being respectful of differing viewpoints and experiences.
+- Gracefully accepting constructive criticism.
+- Focusing on what is best for the community and the project.
+- Showing empathy towards other community members.
 
-Examples of unacceptable behavior include:
+**Examples of unacceptable behavior:**
 
-- Harassment or discrimination.
-- Personal attacks.
-- Trolling or insulting language.
-- Publishing private information without permission.
+- The use of sexualized language or imagery and unwelcome sexual attention or advances.
+- Trolling, insulting or derogatory comments, and personal or political attacks.
+- Public or private harassment.
+- Publishing others' private information without explicit permission.
+- Other conduct which could reasonably be considered inappropriate in a professional setting.
+
+## Our Responsibilities
+
+Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.
+
+Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, issues, and other contributions that are not aligned with this Code of Conduct.
+
+## Scope
+
+This Code of Conduct applies within all project spaces, including the repository, issue tracker, pull requests, and any other communication channels used by the project.
 
 ## Enforcement
 
-Project maintainers are responsible for enforcing this Code of Conduct and may remove contributions that violate these guidelines.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by opening an issue or contacting the project maintainers directly.
 
-## Contact
+All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances.
 
-For questions regarding the Code of Conduct, please open an issue or contact the project maintainers.
+## Attribution
+
+This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org), version 2.1.

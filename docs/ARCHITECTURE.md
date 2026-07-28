@@ -2,177 +2,163 @@
 
 ## Purpose
 
-This document describes the high-level architecture of CrowOps.
-
-The goal is to define the overall system structure before implementing features.
-
-CrowOps follows a layered architecture with clear separation of responsibilities.
+This document defines the high-level architecture of CrowOps and serves as the single source of truth for all architectural decisions.
 
 ---
 
-# High-Level Architecture
+## Architecture Style
+
+CrowOps is built as a **Modular Monolith** — a single deployable unit with well-defined internal module boundaries.
+
+| Principle | Description |
+|-----------|-------------|
+| **Modular Monolith** | Domain modules with clear boundaries inside a single deployment |
+| **Layered Architecture** | Controller → Service → Repository → Entity |
+| **Domain-Oriented Design** | Each module owns its domain logic, entities, and data access |
+| **Dependency Injection** | Spring-managed beans with constructor injection |
+| **SOLID Principles** | Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion |
+| **Clean Architecture** | Business logic is independent of frameworks and infrastructure |
+
+---
+
+## High-Level Overview
 
 ```
-                +----------------------+
-                |      Frontend        |
-                |   (React - Future)   |
-                +----------+-----------+
-                           |
-                           | REST API
-                           |
-                +----------v-----------+
-                |   Spring Boot API    |
-                +----------+-----------+
-                           |
-        +------------------+------------------+
-        |                  |                  |
-        |                  |                  |
-+-------v------+   +--------v-------+  +-------v-------+
-|   Services   |   |   Security     |  | Configuration |
-+-------+------+   +--------+-------+  +-------+-------+
-        |                   |                  |
-        +-------------------+------------------+
-                            |
-                    +-------v-------+
-                    | Repositories  |
-                    +-------+-------+
-                            |
-                    +-------v-------+
-                    | PostgreSQL DB |
-                    +---------------+
+                  ┌──────────────────────┐
+                  │      Frontend        │
+                  │   (React - Future)   │
+                  └──────────┬───────────┘
+                             │
+                          REST API
+                             │
+                  ┌──────────▼───────────┐
+                  │    Spring Boot API   │
+                  │   (Modular Monolith) │
+                  └──────────┬───────────┘
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+   ┌──────▼──────┐   ┌──────▼──────┐   ┌──────▼──────┐
+   │   Modules   │   │   Security  │   │   Shared    │
+   │  (Domain)   │   │   (Auth)    │   │  (Common)   │
+   └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             │
+                    ┌────────▼────────┐
+                    │   Repositories  │
+                    └────────┬────────┘
+                             │
+                    ┌────────▼────────┐
+                    │  PostgreSQL DB  │
+                    └─────────────────┘
 ```
 
 ---
 
-# Architecture Style
+## Layer Responsibilities
 
-CrowOps uses:
+### Controller Layer
 
-- Layered Architecture
-- RESTful API
-- Domain-Oriented Design
-- Dependency Injection
-- SOLID Principles
+- Receives HTTP requests and returns HTTP responses.
+- Validates input using Jakarta Validation annotations.
+- Maps between DTOs and service calls.
+- **Must not** contain business logic.
 
-The project starts simple but is designed to scale over time.
+### Service Layer
 
----
+- Contains all business logic and domain rules.
+- Coordinates between repositories.
+- Performs validation beyond simple input checks.
+- Manages transactions.
 
-# Layers
+### Repository Layer
 
-## Controller Layer
+- Handles database communication through Spring Data JPA.
+- Provides CRUD operations and custom queries.
+- **Must not** contain business logic.
 
-Responsibilities:
+### Entity Layer
 
-- Receive HTTP requests
-- Validate input
-- Return HTTP responses
+- Represents database tables using JPA annotations.
+- Models the domain and remains persistence-focused.
+- All entities extend `BaseEntity` for common audit fields.
 
-Controllers should not contain business logic.
+### DTO Layer
 
----
-
-## Service Layer
-
-Responsibilities:
-
-- Business logic
-- Validation
-- Coordination between repositories
-- Domain rules
-
-All application logic belongs here.
+- Isolates API contracts from database models.
+- **Entities must never be exposed directly through the REST API.**
+- Separate DTOs for requests and responses.
 
 ---
 
-## Repository Layer
+## Module Structure
 
-Responsibilities:
+Each domain module follows a consistent internal structure:
 
-- Database communication
-- CRUD operations
-- Query execution
+```
+modules/<module-name>/
+├── controller/       # REST endpoints
+├── service/          # Business logic
+├── repository/       # Data access
+├── entity/           # JPA entities
+└── dto/              # Request/Response DTOs
+```
 
-Repositories should not contain business logic.
+### Current Modules
 
----
-
-## Entity Layer
-
-Represents database tables.
-
-Entities should model the domain and remain persistence-focused.
-
----
-
-## DTO Layer
-
-DTOs isolate API contracts from database models.
-
-Entities should never be exposed directly through the REST API.
-
----
-
-## Security Layer
-
-Responsible for:
-
-- Authentication
-- Authorization
-- JWT
-- User roles
-- Permissions
+| Module | Status | Description |
+|--------|--------|-------------|
+| `user` | ✅ Active | User management |
+| `auth` | 📋 Planned | Authentication & authorization |
+| `server` | 📋 Planned | Server registration & management |
+| `ssh` | 📋 Planned | SSH credential & connection management |
+| `docker` | 📋 Planned | Docker container management |
+| `monitoring` | 📋 Planned | Infrastructure metrics & alerts |
+| `automation` | 📋 Planned | Scheduled jobs & workflows |
+| `notification` | 📋 Planned | Multi-channel notifications |
 
 ---
 
-## Configuration Layer
+## Shared Components
 
-Contains application configuration such as:
+Cross-cutting concerns live in the `shared/` package:
 
-- Security configuration
-- Swagger configuration
-- Database configuration
+```
+shared/
+├── config/           # Application configuration (Security, etc.)
+├── entity/           # BaseEntity and common mapped superclasses
+├── exception/        # Global exception handling (planned)
+└── dto/              # Shared DTOs (planned)
+```
 
----
-
-# Database
-
-CrowOps uses PostgreSQL.
-
-Hibernate is responsible for ORM.
-
-Spring Data JPA provides repository abstraction.
-
----
-
-# Future Modules
-
-The architecture should support future modules without major refactoring.
-
-Planned modules include:
-
-- Server Management
-- Docker Management
-- Linux Services
-- Databases
-- Monitoring
-- Alerts
-- Notifications
-- Automation
-- Audit Logs
+**Rules:**
+- Only truly cross-cutting code belongs in `shared/`.
+- Module-specific code must stay within its module.
+- Modules should not depend on each other directly.
 
 ---
 
-# Design Principles
+## Design Principles
 
-The project follows these principles:
+| Principle | Application |
+|-----------|-------------|
+| **Single Responsibility** | Each class has one reason to change |
+| **Open/Closed** | Extend behavior without modifying existing code |
+| **Dependency Inversion** | Depend on abstractions, not concretions |
+| **Separation of Concerns** | Each layer has a distinct responsibility |
+| **Don't Repeat Yourself** | Shared logic lives in `shared/` |
+| **Convention over Configuration** | Consistent naming and structure across modules |
 
-- Single Responsibility Principle
-- Open/Closed Principle
-- Dependency Inversion
-- Separation of Concerns
-- Clean Code
-- Maintainability
-- Scalability
+---
 
-Every new feature should follow the same architecture.
+## Future Considerations
+
+The architecture is designed to support:
+
+- Extracting modules into independent microservices if needed.
+- Event-driven communication between modules.
+- Horizontal scaling behind a load balancer.
+- API versioning for backward compatibility.
+
+Every new feature must follow the established architecture. Deviations require an Architecture Decision Record (ADR) in `docs/decisions/`.

@@ -2,110 +2,128 @@
 
 ## Design Philosophy
 
-CrowOps is designed as a modular enterprise platform.
+CrowOps uses a **modular database design** where each domain module owns its tables. The database is organized into logical groups that mirror the application's module structure.
 
-The database is organized into logical modules.
-
-The first release (MVP) will implement only a subset of these modules, while the schema is designed to support future expansion without major redesign.
+The schema is designed for long-term scalability — only MVP tables are implemented initially, while the full schema is documented to guide future development.
 
 ---
 
-# Core Modules
+## Database Technology
 
-## Identity & Access Management
-
-Responsible for:
-
-- Users
-- Roles
-- Permissions
-- Authentication
-- Audit Logs
+| Component | Technology |
+|-----------|-----------|
+| **RDBMS** | PostgreSQL 17 |
+| **ORM** | Hibernate 7 (via Spring Data JPA) |
+| **Schema Management** | Hibernate `ddl-auto: update` (development) |
+| **Naming Strategy** | `snake_case` for all database objects |
 
 ---
 
-## Infrastructure
+## Module Ownership
 
-Responsible for:
+Each module owns and manages its own tables. Cross-module relationships use foreign keys where necessary.
 
-- Servers
-- SSH Credentials
-- Operating Systems
-- Server Tags
+### Identity & Access Management
 
----
+Responsible for user accounts, roles, and permissions.
 
-## Monitoring
+| Table | Owner Module |
+|-------|-------------|
+| `users` | `user` |
+| `roles` | `auth` |
+| `permissions` | `auth` |
+| `role_permissions` | `auth` |
+| `user_roles` | `auth` |
+| `audit_logs` | `auth` |
 
-Responsible for:
+### Infrastructure
 
-- Metrics
-- Health Checks
-- Historical Data
-- Alerts
+Responsible for server registration and SSH access.
 
----
+| Table | Owner Module |
+|-------|-------------|
+| `servers` | `server` |
+| `server_tags` | `server` |
+| `ssh_credentials` | `ssh` |
 
-## Docker
+### Monitoring
 
-Responsible for:
+Responsible for metrics, health checks, and alerting.
 
-- Containers
-- Images
-- Volumes
-- Networks
+| Table | Owner Module |
+|-------|-------------|
+| `metrics` | `monitoring` |
+| `metric_history` | `monitoring` |
+| `alerts` | `monitoring` |
+| `health_checks` | `monitoring` |
 
----
+### Docker
 
-## Linux Services
+Responsible for Docker host and container management.
 
-Responsible for:
+| Table | Owner Module |
+|-------|-------------|
+| `docker_hosts` | `docker` |
+| `containers` | `docker` |
+| `images` | `docker` |
+| `volumes` | `docker` |
+| `networks` | `docker` |
 
-- Installed Services
-- Service Status
-- Service Actions
+### Automation
 
----
+Responsible for job scheduling and workflow execution.
 
-## Databases
+| Table | Owner Module |
+|-------|-------------|
+| `jobs` | `automation` |
+| `scripts` | `automation` |
+| `workflows` | `automation` |
 
-Responsible for:
+### Notifications
 
-- PostgreSQL
-- Redis
-- RabbitMQ
-- MinIO
+Responsible for multi-channel notification delivery.
 
----
-
-## Automation
-
-Responsible for:
-
-- Scheduled Jobs
-- Remote Scripts
-- Workflows
-
----
-
-## Notifications
-
-Responsible for:
-
-- Email
-- Telegram
-- Discord
-- Slack
+| Table | Owner Module |
+|-------|-------------|
+| `notification_channels` | `notification` |
+| `notifications` | `notification` |
 
 ---
 
-# MVP Scope
+## Common Columns
 
-The first version implements only:
+All entities extend `BaseEntity`, which provides:
 
-- Users
-- Servers
-- SSH Connection Testing
-- Basic Server Information
+| Column | Type | Constraint | Description |
+|--------|------|-----------|-------------|
+| `id` | `BIGINT` | `PRIMARY KEY, AUTO_INCREMENT` | Unique identifier |
+| `created_at` | `TIMESTAMP` | `NOT NULL` | Record creation timestamp |
+| `updated_at` | `TIMESTAMP` | `NOT NULL` | Last modification timestamp |
 
-All remaining modules are planned for future releases.
+---
+
+## Naming Conventions
+
+| Object | Convention | Example |
+|--------|-----------|---------|
+| Tables | `snake_case`, plural | `users`, `ssh_credentials` |
+| Columns | `snake_case` | `first_name`, `created_at` |
+| Foreign Keys | `<table>_id` | `user_id`, `server_id` |
+| Indexes | `idx_<table>_<column>` | `idx_users_email` |
+| Unique Constraints | `uk_<table>_<column>` | `uk_users_username` |
+
+---
+
+## MVP Scope
+
+The initial release implements only:
+
+- ✅ `users` — System user accounts
+
+The following are planned for subsequent phases:
+
+- `servers` — Registered servers
+- `ssh_credentials` — SSH authentication data
+- Remaining tables as modules are developed
+
+All remaining tables will be added incrementally following the same design principles.

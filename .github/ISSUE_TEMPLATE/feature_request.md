@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature
+about: Suggest a new feature for CrowOps
 title: "[FEATURE] "
 labels: enhancement
 assignees: ""
@@ -8,16 +8,35 @@ assignees: ""
 
 ## Feature Description
 
-Describe the feature.
+A clear and concise description of the feature you would like to see.
 
-## Problem
+## Problem Statement
 
-What problem does this feature solve?
+What problem does this feature solve? What pain point does it address?
 
 ## Proposed Solution
 
-Describe your proposed solution.
+Describe your proposed solution or approach.
 
-## Additional Notes
+## Alternatives Considered
 
-Add any additional information.
+Describe any alternative solutions or features you have considered.
+
+## Module
+
+Which module does this feature belong to?
+
+- [ ] User
+- [ ] Auth
+- [ ] Server
+- [ ] SSH
+- [ ] Docker
+- [ ] Monitoring
+- [ ] Automation
+- [ ] Notification
+- [ ] Shared
+- [ ] Other
+
+## Additional Context
+
+Add any other context, mockups, or references about the feature request here.

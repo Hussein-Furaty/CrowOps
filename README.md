@@ -1,209 +1,223 @@
-# CrowOps
+<h1 align="center">🐦‍⬛ CrowOps</h1>
 
 <p align="center">
   <strong>Centralize. Monitor. Automate.</strong><br>
-  Enterprise Infrastructure Management Platform
+  Enterprise-Grade Infrastructure Management Platform
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Java-21-blue" alt="Java">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.x-6DB33F" alt="Spring Boot">
-  <img src="https://img.shields.io/badge/PostgreSQL-17-336791" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
-  <img src="https://img.shields.io/badge/Status-Under%20Development-orange" alt="Status">
-  <img src="https://img.shields.io/badge/Version-v0.1.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21">
+  <img src="https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white" alt="Maven">
+  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Status-Under%20Development-orange?style=for-the-badge" alt="Status">
 </p>
 
 ---
 
-## Overview
+## 📋 Overview
 
-CrowOps is an open-source infrastructure management platform that centralizes server administration through a modern web interface.
+CrowOps is an open-source infrastructure management platform that centralizes server administration, monitoring, and automation through a unified REST API.
 
-Instead of managing multiple machines through separate SSH sessions and different administration tools, CrowOps provides a single place to monitor infrastructure, execute remote operations, and manage services.
-
-The project is designed as a long-term journey toward enterprise software engineering, focusing on clean architecture, maintainability, security, and scalability.
+Instead of managing multiple machines through separate SSH sessions and scattered tools, CrowOps provides a single platform to monitor infrastructure, execute remote operations, and manage services — designed from the ground up with **Clean Architecture**, **SOLID principles**, and **enterprise-grade scalability**.
 
 ---
 
-## Why CrowOps?
+## 🎯 Why CrowOps?
 
-As infrastructure grows, managing servers becomes increasingly fragmented.
+As infrastructure grows, managing servers becomes increasingly fragmented. Administrators switch between multiple SSH sessions, dashboards, and monitoring tools just to perform routine operations.
 
-Administrators often switch between multiple SSH sessions, dashboards, and monitoring tools just to perform routine operations.
+CrowOps solves this by providing:
 
-CrowOps aims to simplify this workflow by providing a unified platform capable of managing infrastructure from a single dashboard while remaining modular and extensible.
-
----
-
-## Current Status
-
-> 🚧 CrowOps is currently under active development.
-
-The current milestone focuses on building a solid architecture before implementing production features.
-
-The first public version (v1.0) will provide basic server management through secure SSH communication.
+- **Unified Management** — One platform for all your servers
+- **Secure Access** — Centralized SSH credential management
+- **Real-Time Monitoring** — CPU, memory, disk, and network metrics
+- **Automation** — Scheduled jobs and remote command execution
+- **Extensibility** — Modular architecture that grows with your needs
 
 ---
 
-## Planned Features
+## 🏗️ Architecture
 
-### Server Management
+CrowOps follows a **Modular Monolith** architecture with domain-oriented modules and layered design.
 
-- Register servers
-- Edit server information
-- Remove servers
-- Test SSH connectivity
-- View server details
+```
+com.crowops.backend
+│
+├── modules/                    # Domain Modules
+│   ├── user/                   # User Management
+│   │   ├── controller/
+│   │   ├── service/
+│   │   ├── repository/
+│   │   ├── entity/
+│   │   └── dto/
+│   ├── auth/                   # Authentication & Authorization
+│   ├── server/                 # Server Management
+│   ├── ssh/                    # SSH Connection Management
+│   ├── docker/                 # Docker Container Management
+│   ├── monitoring/             # Infrastructure Monitoring
+│   ├── automation/             # Task Automation
+│   └── notification/           # Notification System
+│
+└── shared/                     # Cross-Cutting Concerns
+    ├── config/                 # Application Configuration
+    ├── entity/                 # Base Entities
+    ├── exception/              # Global Exception Handling
+    └── dto/                    # Shared DTOs
+```
 
-### System Monitoring
+Each module follows the **Layered Architecture** pattern:
 
-- CPU usage
-- Memory usage
-- Disk usage
-- Uptime
-- Operating system information
-
-### Docker Management *(Planned)*
-
-- Containers
-- Images
-- Volumes
-- Networks
-
-### Service Management *(Planned)*
-
-- Start services
-- Stop services
-- Restart services
-- View service status
-
-### Monitoring *(Planned)*
-
-- PostgreSQL
-- Redis
-- RabbitMQ
-- MinIO
-
-### Automation *(Planned)*
-
-- Scheduled jobs
-- Remote command execution
-- Infrastructure workflows
+| Layer | Responsibility |
+|-------|----------------|
+| **Controller** | HTTP request handling, input validation, response formatting |
+| **Service** | Business logic, domain rules, orchestration |
+| **Repository** | Data access, query execution |
+| **Entity** | Domain model, database mapping |
+| **DTO** | API contract isolation |
 
 ---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
-### Backend
-
-- Java 21 LTS
-- Spring Boot
-- Spring Security
-- Spring Data JPA
-- Hibernate
-- Maven
-
-### Database
-
-- PostgreSQL
-
-### Infrastructure
-
-- Docker
-- Docker Compose
-
-### API
-
-- REST API
-- OpenAPI (Swagger)
+| Category | Technology | Version |
+|----------|-----------|---------|
+| **Language** | Java | 21 LTS |
+| **Framework** | Spring Boot | 4.1 |
+| **Security** | Spring Security | 7.x |
+| **Persistence** | Spring Data JPA + Hibernate | 7.x |
+| **Database** | PostgreSQL | 17 |
+| **Build** | Maven | 3.9+ |
+| **Code Gen** | Lombok | Latest |
 
 ---
 
-## Architecture Principles
+## 🚀 Getting Started
 
-CrowOps is built around modern software engineering practices.
+### Prerequisites
 
-Core principles include:
+- **Java 21** or higher
+- **PostgreSQL 17** running on `localhost:5432`
+- **Maven 3.9+** (or use the included Maven Wrapper)
 
-- Clean Architecture
-- SOLID Principles
-- Modular Design
-- Separation of Concerns
-- Scalability
-- Maintainability
-- Security by Design
+### Database Setup
 
----
+```sql
+CREATE DATABASE crowops;
+```
 
-## Roadmap
+### Clone & Run
 
+```bash
+# Clone the repository
+git clone https://github.com/Hussein-Furaty/CrowOps.git
+cd CrowOps/backend
 
-| Phase                     | Status         |
-| ------------------------- | -------------- |
-| Repository Foundation     | ✅ Completed   |
-| Architecture Design       | 🚧 In Progress |
-| MVP (Server Management)   | ⏳ Planned     |
-| Docker Management         | ⏳ Planned     |
-| Linux Services            | ⏳ Planned     |
-| Infrastructure Monitoring | ⏳ Planned     |
-| Notifications             | ⏳ Planned     |
-| Multi-user Authentication | ⏳ Planned     |
-| Automation Engine         | ⏳ Planned     |
+# Run with Maven Wrapper
+./mvnw spring-boot:run
+```
 
----
+The API will be available at `http://localhost:8081`.
 
-## Repository Structure
+### Configuration
 
-```text
-CrowOps
-├── assets/
-├── backend/
-├── docker/
-├── docs/
-├── frontend/
-├── scripts/
-└── .github/
+The application configuration is located at `backend/src/main/resources/application.yaml`.
+
+Update the database credentials as needed:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/crowops
+    username: postgres
+    password: your_password
 ```
 
 ---
 
-## Getting Started
+## 📡 API Endpoints
 
-Project setup documentation will be added as development progresses.
+### User Module
 
----
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/users` | List all users |
 
-## Documentation
-
-Project documentation is available inside the `docs/` directory.
-
-Future documentation will include:
-
-- Architecture
-- Database Design
-- API Reference
-- Development Guide
-- Deployment Guide
+> More endpoints will be added as modules are developed.
 
 ---
 
-## Contributing
+## 🗺️ Roadmap
 
-Contributions, discussions, bug reports, and feature suggestions are welcome.
+### Phase 1 — Foundation ✅
 
-Contribution guidelines will be available in `CONTRIBUTING.md`.
+- [x] Spring Boot project initialization
+- [x] PostgreSQL integration
+- [x] Modular monolith structure
+- [x] BaseEntity with audit fields
+- [x] User module (Entity, Repository, Service, Controller, DTO)
+- [x] Spring Security configuration
+- [x] Project documentation
+
+### Phase 2 — Authentication & Authorization
+
+- [ ] JWT-based authentication
+- [ ] User registration & login
+- [ ] Role & permission management
+- [ ] Password encryption with BCrypt
+
+### Phase 3 — Infrastructure Management
+
+- [ ] Server module (CRUD + SSH connectivity)
+- [ ] SSH credential management
+- [ ] Docker container management
+
+### Phase 4 — Monitoring & Automation
+
+- [ ] Real-time server metrics
+- [ ] Alert system
+- [ ] Scheduled job execution
+- [ ] Notification channels (Email, Telegram, Discord)
 
 ---
 
-## License
+## 📚 Documentation
 
-This project is licensed under the MIT License.
+Detailed documentation is available in the [`docs/`](docs/) directory:
 
-See the `LICENSE` file for more information.
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture and design principles |
+| [DATABASE_DESIGN.md](docs/DATABASE_DESIGN.md) | Database module organization |
+| [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | Table definitions and relationships |
+| [DOMAIN_MODEL.md](docs/DOMAIN_MODEL.md) | Core business entities |
+| [SERVER_DESIGN.md](docs/SERVER_DESIGN.md) | Server entity design decisions |
 
 ---
 
-## Author
+## 🤝 Contributing
 
-Developed as a long-term enterprise software engineering project for learning, experimentation, and portfolio development.
+Contributions are welcome! Please read the following before submitting a Pull Request:
+
+- [Contributing Guidelines](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👤 Author
+
+Developed by **[Hussein Furaty](https://github.com/Hussein-Furaty)**
+
+---
+
+<p align="center">
+  <sub>Built with ☕ and dedication to clean architecture.</sub>
+</p>
