@@ -1,13 +1,16 @@
 package com.crowops.backend.modules.user.controller;
 
+import com.crowops.backend.modules.user.dto.CreateUserRequest;
 import com.crowops.backend.modules.user.dto.UserResponse;
 import com.crowops.backend.modules.user.service.UserService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -16,8 +19,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/api/users")
+    @GetMapping
     public List<UserResponse> getAllUsers() {
         return userService.findAll();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
+        return userService.createUser(request);
     }
 }
