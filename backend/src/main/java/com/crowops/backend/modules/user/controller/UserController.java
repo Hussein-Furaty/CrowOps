@@ -1,6 +1,6 @@
 package com.crowops.backend.modules.user.controller;
 
-import com.crowops.backend.modules.user.entity.User;
+import com.crowops.backend.modules.user.dto.UserResponse;
 import com.crowops.backend.modules.user.service.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +17,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users")
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.findAll();
     }
 }
