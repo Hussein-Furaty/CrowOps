@@ -1,22 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { axiosClient } from '../api/axiosClient';
-import type { CreateServerPayload, SaveSshCredentialPayload, ServerResponse, ServerSystemInfo } from '../types';
+import { CreateServerPayload, SaveSshCredentialPayload, ServerResponse, ServerSystemInfo } from '../types';
 import { AddServerModal } from './AddServerModal';
 import { SshCredentialModal } from './SshCredentialModal';
+import { ServerDetailsModal } from './ServerDetailsModal';
 import {
-  Server as ServerIcon,
-  Plus,
-  RefreshCw,
-  LogOut,
-  Key,
-  Wifi,
-  Trash2,
-  Cpu,
-  HardDrive,
-  Activity,
-  CheckCircle,
-  XCircle,
-  Clock
+  Server as ServerIcon, Plus, RefreshCw, LogOut, Key, Wifi, Trash2, Cpu, HardDrive, Activity, 
+  CheckCircle, XCircle, Clock, ChevronRight, Settings
 } from 'lucide-react';
 
 interface ServerDashboardProps {
@@ -28,6 +18,7 @@ export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) =>
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedServerForSsh, setSelectedServerForSsh] = useState<ServerResponse | null>(null);
+  const [selectedServerForDetails, setSelectedServerForDetails] = useState<ServerResponse | null>(null);
   const [systemInfos, setSystemInfos] = useState<Record<number, ServerSystemInfo>>({});
   const [testingConnection, setTestingConnection] = useState<Record<number, boolean>>({});
   const [connectionStatus, setConnectionStatus] = useState<Record<number, boolean | null>>({});
@@ -70,6 +61,9 @@ export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) =>
     try {
       const res = await axiosClient.post(`/api/servers/${serverId}/ssh-credentials/test`);
       setConnectionStatus(prev => ({ ...prev, [serverId]: res.data }));
+      if (res.data) {
+        handleFetchMetrics(serverId); // fetch metrics automatically on success
+      }
     } catch (err) {
       setConnectionStatus(prev => ({ ...prev, [serverId]: false }));
     } finally {
@@ -87,207 +81,130 @@ export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) =>
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0B0F17', color: '#F8FAFC' }}>
+    <div style={{ minHeight: '100vh' }}>
       {/* Top Navbar */}
       <header style={{
-        background: 'rgba(18, 24, 36, 0.8)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-        padding: '1rem 2rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 20
+        background: 'var(--bg-panel)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--border-light)',
+        padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        position: 'sticky', top: 0, zIndex: 20
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ padding: '0.5rem', background: 'rgba(59, 130, 246, 0.15)', borderRadius: '8px', color: '#3B82F6' }}>
-            <ServerIcon size={24} />
+          <div style={{ padding: '0.5rem', background: 'rgba(99, 102, 241, 0.15)', borderRadius: '10px', color: 'var(--brand-primary)' }}>
+            <ServerIcon size={26} />
           </div>
           <div>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>CrowOps Dashboard</h1>
-            <span style={{ fontSize: '0.75rem', color: '#94A3B8' }}>Enterprise Server & Infrastructure Control</span>
+            <h1 className="text-gradient" style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0 }}>CrowOps</h1>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Enterprise Infrastructure</span>
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.6rem 1.25rem',
-              background: '#3B82F6',
-              color: '#FFF',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
-          >
-            <Plus size={18} />
-            Add Server
+          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Plus size={18} /> Add Server
           </button>
-
-          <button
-            onClick={onLogout}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.6rem 1rem',
-              background: 'rgba(239, 68, 68, 0.15)',
-              color: '#FCA5A5',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              borderRadius: '8px',
-              fontWeight: 500,
-              cursor: 'pointer'
-            }}
-          >
-            <LogOut size={16} />
-            Logout
+          <button className="btn-secondary" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(239, 68, 68, 0.3)', color: 'var(--status-danger)' }}>
+            <LogOut size={16} /> Logout
           </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main style={{ padding: '2rem', maxWidth: '1280px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+      <main style={{ padding: '2.5rem', maxWidth: '1400px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>Infrastructure Overview</h2>
-            <p style={{ margin: 0, color: '#94A3B8', fontSize: '0.875rem' }}>Managing {servers.length} server instances</p>
+            <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>Overview</h2>
+            <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Managing {servers.length} server instances</p>
           </div>
-
-          <button
-            onClick={fetchServers}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              padding: '0.5rem 1rem',
-              background: '#1E293B',
-              color: '#CBD5E1',
-              border: '1px solid #334155',
-              borderRadius: '6px',
-              cursor: 'pointer'
-            }}
-          >
-            <RefreshCw size={16} />
-            Refresh List
+          <button className="btn-secondary" onClick={fetchServers} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <RefreshCw size={16} /> Refresh
           </button>
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem 0', color: '#94A3B8' }}>Loading infrastructure data...</div>
+          <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--brand-primary)' }}>
+            <RefreshCw className="animate-pulse" size={40} style={{ margin: '0 auto' }}/>
+          </div>
         ) : servers.length === 0 ? (
-          <div className="glass-panel" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-            <ServerIcon size={48} color="#64748B" style={{ marginBottom: '1rem' }} />
-            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.25rem' }}>No servers registered yet</h3>
-            <p style={{ color: '#94A3B8', marginBottom: '1.5rem' }}>Start by adding your first server to manage SSH credentials and metrics.</p>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              style={{ padding: '0.75rem 1.5rem', background: '#3B82F6', color: '#FFF', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
-            >
-              Add Your First Server
-            </button>
+          <div className="glass-panel" style={{ textAlign: 'center', padding: '5rem 2rem' }}>
+            <ServerIcon size={64} color="var(--text-tertiary)" style={{ marginBottom: '1.5rem' }} />
+            <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>No servers registered</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Start building your infrastructure by adding a server.</p>
+            <button className="btn-primary" onClick={() => setIsAddModalOpen(true)}>Add Your First Server</button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '1.5rem' }}>
             {servers.map((server) => {
               const metrics = systemInfos[server.id];
               const isTesting = testingConnection[server.id];
               const testResult = connectionStatus[server.id];
 
               return (
-                <div key={server.id} className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div key={server.id} className="glass-card animate-fade-in" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                      <div>
-                        <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', fontWeight: 700, color: '#F8FAFC' }}>{server.name}</h3>
-                        <span style={{ fontSize: '0.8rem', color: '#94A3B8', fontFamily: 'monospace' }}>{server.ipAddress}:{server.sshPort}</span>
+                      <div style={{ cursor: 'pointer' }} onClick={() => setSelectedServerForDetails(server)}>
+                        <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.25rem', fontWeight: 700 }}>{server.name}</h3>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{server.ipAddress}:{server.sshPort}</span>
                       </div>
                       <span style={{
-                        padding: '0.25rem 0.6rem',
-                        borderRadius: '20px',
-                        fontSize: '0.75rem',
-                        fontWeight: 600,
-                        background: server.enabled ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                        color: server.enabled ? '#34D399' : '#FCA5A5'
+                        padding: '0.3rem 0.7rem', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 600,
+                        background: server.enabled ? 'var(--status-success-bg)' : 'var(--status-danger-bg)',
+                        color: server.enabled ? 'var(--status-success)' : 'var(--status-danger)'
                       }}>
                         {server.enabled ? 'ACTIVE' : 'DISABLED'}
                       </span>
                     </div>
 
-                    <div style={{ fontSize: '0.85rem', color: '#CBD5E1', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginBottom: '1.25rem' }}>
-                      <div><strong style={{ color: '#64748B' }}>Hostname:</strong> {server.hostname}</div>
-                      {server.os && <div><strong style={{ color: '#64748B' }}>OS:</strong> {server.os}</div>}
-                    </div>
-
-                    {/* System Metrics Box */}
                     {metrics ? (
-                      <div style={{ background: '#0F172A', padding: '0.875rem', borderRadius: '8px', fontSize: '0.8rem', marginBottom: '1.25rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                        <div><Cpu size={14} color="#60A5FA" /> <strong>CPU:</strong> {metrics.cpuUsage}</div>
-                        <div><Activity size={14} color="#34D399" /> <strong>RAM:</strong> {metrics.memoryUsage}</div>
-                        <div><HardDrive size={14} color="#F59E0B" /> <strong>Disk:</strong> {metrics.diskUsage}</div>
-                        <div><Clock size={14} color="#C084FC" /> <strong>Uptime:</strong> {metrics.uptime}</div>
+                      <div style={{ 
+                        background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '10px', 
+                        fontSize: '0.85rem', marginBottom: '1.25rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem',
+                        border: '1px solid var(--border-light)'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Cpu size={16} color="var(--brand-primary)" /> <strong>CPU:</strong> {metrics.cpuUsage}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Activity size={16} color="var(--status-success)" /> <strong>RAM:</strong> {metrics.memoryUsage}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><HardDrive size={16} color="var(--status-warning)" /> <strong>Disk:</strong> {metrics.diskUsage}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Clock size={16} color="var(--brand-secondary)" /> <strong>Up:</strong> {metrics.uptime}</div>
                       </div>
-                    ) : null}
+                    ) : (
+                      <div style={{ 
+                        background: 'rgba(0,0,0,0.1)', padding: '1rem', borderRadius: '10px', 
+                        fontSize: '0.85rem', marginBottom: '1.25rem', color: 'var(--text-tertiary)', textAlign: 'center',
+                        border: '1px dashed var(--border-light)'
+                      }}>
+                        No metrics. Test SSH to fetch.
+                      </div>
+                    )}
                   </div>
 
                   <div>
-                    {/* SSH Status Feedback */}
                     {testResult !== undefined && testResult !== null && (
                       <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        padding: '0.5rem',
-                        borderRadius: '6px',
-                        fontSize: '0.8rem',
-                        marginBottom: '1rem',
-                        background: testResult ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                        color: testResult ? '#34D399' : '#FCA5A5'
+                        display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem', borderRadius: '8px', 
+                        fontSize: '0.85rem', marginBottom: '1rem', fontWeight: 500,
+                        background: testResult ? 'var(--status-success-bg)' : 'var(--status-danger-bg)',
+                        color: testResult ? 'var(--status-success)' : 'var(--status-danger)'
                       }}>
                         {testResult ? <CheckCircle size={16} /> : <XCircle size={16} />}
                         <span>{testResult ? 'SSH Connection Successful' : 'SSH Connection Failed'}</span>
                       </div>
                     )}
 
-                    {/* Action Bar */}
-                    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1rem' }}>
-                      <button
-                        onClick={() => setSelectedServerForSsh(server)}
-                        title="Configure SSH Credentials"
-                        style={{ flex: 1, padding: '0.5rem', background: '#1E293B', color: '#94A3B8', border: '1px solid #334155', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', fontSize: '0.775rem' }}
-                      >
-                        <Key size={14} /> SSH Keys
+                    <div style={{ display: 'flex', gap: '0.5rem', borderTop: '1px solid var(--border-light)', paddingTop: '1rem' }}>
+                      <button className="btn-secondary" onClick={() => setSelectedServerForDetails(server)} title="Manage Server" style={{ flex: 1, padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', fontSize: '0.8rem', background: 'var(--brand-primary)', color: 'white', borderColor: 'var(--brand-primary)' }}>
+                        <Settings size={14} /> Manage
                       </button>
 
-                      <button
-                        onClick={() => handleTestSshConnection(server.id)}
-                        disabled={isTesting}
-                        title="Test SSH Connection"
-                        style={{ flex: 1, padding: '0.5rem', background: '#1E293B', color: '#60A5FA', border: '1px solid #334155', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem', fontSize: '0.775rem' }}
-                      >
-                        <Wifi size={14} /> {isTesting ? 'Testing...' : 'Test Conn'}
+                      <button className="btn-secondary" onClick={() => setSelectedServerForSsh(server)} title="SSH Keys" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Key size={16} />
                       </button>
 
-                      <button
-                        onClick={() => handleFetchMetrics(server.id)}
-                        title="Fetch Live System Info"
-                        style={{ padding: '0.5rem', background: '#1E293B', color: '#34D399', border: '1px solid #334155', borderRadius: '6px', cursor: 'pointer' }}
-                      >
-                        <Activity size={14} />
+                      <button className="btn-secondary" onClick={() => handleTestSshConnection(server.id)} disabled={isTesting} title="Test Connection" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--brand-primary)' }}>
+                        {isTesting ? <RefreshCw className="animate-pulse" size={16} /> : <Wifi size={16} />}
                       </button>
 
-                      <button
-                        onClick={() => handleDeleteServer(server.id)}
-                        title="Delete Server"
-                        style={{ padding: '0.5rem', background: 'rgba(239, 68, 68, 0.1)', color: '#FCA5A5', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: '6px', cursor: 'pointer' }}
-                      >
-                        <Trash2 size={14} />
+                      <button className="btn-secondary" onClick={() => handleDeleteServer(server.id)} title="Delete Server" style={{ padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-danger)' }}>
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -298,18 +215,9 @@ export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) =>
         )}
       </main>
 
-      <AddServerModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddServer}
-      />
-
-      <SshCredentialModal
-        server={selectedServerForSsh}
-        isOpen={!!selectedServerForSsh}
-        onClose={() => setSelectedServerForSsh(null)}
-        onSubmit={handleSaveSshCredentials}
-      />
+      <AddServerModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onSubmit={handleAddServer} />
+      <SshCredentialModal server={selectedServerForSsh} isOpen={!!selectedServerForSsh} onClose={() => setSelectedServerForSsh(null)} onSubmit={handleSaveSshCredentials} />
+      <ServerDetailsModal server={selectedServerForDetails} isOpen={!!selectedServerForDetails} onClose={() => setSelectedServerForDetails(null)} />
     </div>
   );
 };
