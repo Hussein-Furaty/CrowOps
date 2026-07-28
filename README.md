@@ -9,108 +9,53 @@
   <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21">
   <img src="https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot">
   <img src="https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Maven-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white" alt="Maven">
+  <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Status-Under%20Development-orange?style=for-the-badge" alt="Status">
+  <img src="https://img.shields.io/badge/Status-v0.1.0%20(MVP%20Released)-green?style=for-the-badge" alt="Status">
 </p>
 
 ---
 
 ## 📋 Overview
 
-CrowOps is an open-source infrastructure management platform that centralizes server administration, monitoring, and automation through a unified REST API.
+CrowOps is an open-source enterprise infrastructure management platform that centralizes server administration, monitoring, and automation through a unified REST API.
 
 Instead of managing multiple machines through separate SSH sessions and scattered tools, CrowOps provides a single platform to monitor infrastructure, execute remote operations, and manage services — designed from the ground up with **Clean Architecture**, **SOLID principles**, and **enterprise-grade scalability**.
 
 ---
 
-## 🎯 Why CrowOps?
+## 🎯 Features (v0.1.0 MVP)
 
-As infrastructure grows, managing servers becomes increasingly fragmented. Administrators switch between multiple SSH sessions, dashboards, and monitoring tools just to perform routine operations.
-
-CrowOps solves this by providing:
-
-- **Unified Management** — One platform for all your servers
-- **Secure Access** — Centralized SSH credential management
-- **Real-Time Monitoring** — CPU, memory, disk, and network metrics
-- **Automation** — Scheduled jobs and remote command execution
-- **Extensibility** — Modular architecture that grows with your needs
-
----
-
-## 🏗️ Architecture
-
-CrowOps follows a **Modular Monolith** architecture with domain-oriented modules and layered design.
-
-```
-com.crowops.backend
-│
-├── modules/                    # Domain Modules
-│   ├── user/                   # User Management
-│   │   ├── controller/
-│   │   ├── service/
-│   │   ├── repository/
-│   │   ├── entity/
-│   │   └── dto/
-│   ├── auth/                   # Authentication & Authorization
-│   ├── server/                 # Server Management
-│   ├── ssh/                    # SSH Connection Management
-│   ├── docker/                 # Docker Container Management
-│   ├── monitoring/             # Infrastructure Monitoring
-│   ├── automation/             # Task Automation
-│   └── notification/           # Notification System
-│
-└── shared/                     # Cross-Cutting Concerns
-    ├── config/                 # Application Configuration
-    ├── entity/                 # Base Entities
-    ├── exception/              # Global Exception Handling
-    └── dto/                    # Shared DTOs
-```
-
-Each module follows the **Layered Architecture** pattern:
-
-| Layer | Responsibility |
-|-------|----------------|
-| **Controller** | HTTP request handling, input validation, response formatting |
-| **Service** | Business logic, domain rules, orchestration |
-| **Repository** | Data access, query execution |
-| **Entity** | Domain model, database mapping |
-| **DTO** | API contract isolation |
-
----
-
-## 🛠️ Technology Stack
-
-| Category | Technology | Version |
-|----------|-----------|---------|
-| **Language** | Java | 21 LTS |
-| **Framework** | Spring Boot | 4.1 |
-| **Security** | Spring Security | 7.x |
-| **Persistence** | Spring Data JPA + Hibernate | 7.x |
-| **Database** | PostgreSQL | 17 |
-| **Build** | Maven | 3.9+ |
-| **Code Gen** | Lombok | Latest |
+- **Authentication & Security**: JWT stateless authentication with BCrypt password hashing and custom user details security integration.
+- **User Management**: Create and list users with DTO isolation and validation.
+- **Server Administration**: Complete CRUD API for managing server instances with IP address uniqueness checks.
+- **SSH Credential Management**: Encapsulated One-to-One credential linking per server supporting PASSWORD and KEY auth types.
+- **SSH Connectivity & Diagnostics**: Real-time SSH connection testing (`JSch`) and live hardware metrics extraction (CPU, RAM, Disk, Uptime, OS).
+- **Global Error Handling**: Standardized structured JSON error responses across all API endpoints.
+- **Container Readiness**: Multi-stage `Dockerfile` and `docker-compose.yml` for instant zero-config deployment.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Option 1: Run with Docker Compose (Recommended)
 
-- **Java 21** or higher
-- **PostgreSQL 17** running on `localhost:5432`
-- **Maven 3.9+** (or use the included Maven Wrapper)
-
-### Database Setup
-
-```sql
-CREATE DATABASE crowops;
-```
-
-### Clone & Run
+Ensure Docker Desktop is installed and running, then execute:
 
 ```bash
-# Clone the repository
+docker-compose up --build -d
+```
+
+The API will be available at `http://localhost:8081`.
+
+### Option 2: Local Development Setup
+
+#### Prerequisites
+- **Java 21** or higher
+- **PostgreSQL 17** running on `localhost:5432` with database `crowops` created
+
+```bash
+# Clone repository
 git clone https://github.com/Hussein-Furaty/CrowOps.git
 cd CrowOps/backend
 
@@ -118,73 +63,62 @@ cd CrowOps/backend
 ./mvnw spring-boot:run
 ```
 
-The API will be available at `http://localhost:8081`.
-
-### Configuration
-
-The application configuration is located at `backend/src/main/resources/application.yaml`.
-
-Update the database credentials as needed:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/crowops
-    username: postgres
-    password: your_password
-```
-
 ---
 
 ## 📡 API Endpoints
 
+### Auth Module
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/api/auth/login` | Authenticate user and receive JWT Token | No |
+| `POST` | `/api/users` | Register a new user | No |
+
 ### User Module
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/users` | List all users | Yes |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/users` | List all users |
+### Server Module
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/servers` | List all registered servers | Yes |
+| `POST` | `/api/servers` | Register a new server | Yes |
+| `GET` | `/api/servers/{id}` | Get server details by ID | Yes |
+| `PUT` | `/api/servers/{id}` | Update server information | Yes |
+| `DELETE` | `/api/servers/{id}` | Delete a server | Yes |
+| `GET` | `/api/servers/{id}/system-info` | Fetch live SSH system metrics (RAM, CPU, Disk) | Yes |
 
-> More endpoints will be added as modules are developed.
+### SSH Module
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/servers/{serverId}/ssh-credentials` | Get credential status for server | Yes |
+| `PUT` | `/api/servers/{serverId}/ssh-credentials` | Create or update SSH credentials | Yes |
+| `DELETE` | `/api/servers/{serverId}/ssh-credentials` | Delete SSH credentials | Yes |
+| `POST` | `/api/servers/{serverId}/ssh-credentials/test` | Test SSH connectivity | Yes |
 
 ---
 
 ## 🗺️ Roadmap
 
-### Phase 1 — Foundation ✅
+### Phase 1 — Foundation & MVP ✅
+- [x] Spring Boot modular monolith architecture
+- [x] PostgreSQL integration & BaseEntity audit tracking
+- [x] User management module
+- [x] JWT Authentication & BCrypt Password Encryption
+- [x] Server management CRUD module
+- [x] SSH Credential management module
+- [x] Real-time SSH Connection tester & System Info extractor
+- [x] Dockerfile & Docker Compose configuration
+- [x] Automated Unit Test Suite (JUnit 5 + Mockito)
 
-- [x] Spring Boot project initialization
-- [x] PostgreSQL integration
-- [x] Modular monolith structure
-- [x] BaseEntity with audit fields
-- [x] User module (Entity, Repository, Service, Controller, DTO)
-- [x] Spring Security configuration
-- [x] Project documentation
-
-### Phase 2 — Authentication & Authorization
-
-- [ ] JWT-based authentication
-- [ ] User registration & login
-- [ ] Role & permission management
-- [ ] Password encryption with BCrypt
-
-### Phase 3 — Infrastructure Management
-
-- [ ] Server module (CRUD + SSH connectivity)
-- [ ] SSH credential management
-- [ ] Docker container management
-
-### Phase 4 — Monitoring & Automation
-
-- [ ] Real-time server metrics
-- [ ] Alert system
-- [ ] Scheduled job execution
-- [ ] Notification channels (Email, Telegram, Discord)
+### Phase 2 — Docker Management & Monitoring (Coming Next)
+- [ ] Remote Docker container management over SSH
+- [ ] Automated health checks & alerts
+- [ ] Task automation & scheduled executions
 
 ---
 
 ## 📚 Documentation
-
-Detailed documentation is available in the [`docs/`](docs/) directory:
 
 | Document | Description |
 |----------|-------------|
@@ -193,16 +127,6 @@ Detailed documentation is available in the [`docs/`](docs/) directory:
 | [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | Table definitions and relationships |
 | [DOMAIN_MODEL.md](docs/DOMAIN_MODEL.md) | Core business entities |
 | [SERVER_DESIGN.md](docs/SERVER_DESIGN.md) | Server entity design decisions |
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read the following before submitting a Pull Request:
-
-- [Contributing Guidelines](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Security Policy](SECURITY.md)
 
 ---
 
@@ -215,9 +139,3 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 ## 👤 Author
 
 Developed by **[Hussein Furaty](https://github.com/Hussein-Furaty)**
-
----
-
-<p align="center">
-  <sub>Built with ☕ and dedication to clean architecture.</sub>
-</p>
