@@ -61,4 +61,9 @@ export interface ServerSystemInfo {
   cpuUsage: string;
   memoryUsage: string;
   diskUsage: string;
+  networkIn: string;
+  networkOut: string;
+  loadAverage: string;
+  openPorts: string;
+  processCount: number;
 }
