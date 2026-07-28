@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SaveSshCredentialPayload, ServerResponse } from '../types';
+import type { SaveSshCredentialPayload, ServerResponse } from '../types';
 import { X, Key, Lock, User } from 'lucide-react';
 
 interface SshCredentialModalProps {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { axiosClient } from '../api/axiosClient';
-import { CreateServerPayload, SaveSshCredentialPayload, ServerResponse, ServerSystemInfo } from '../types';
+import type { CreateServerPayload, SaveSshCredentialPayload, ServerResponse, ServerSystemInfo } from '../types';
 import { AddServerModal } from './AddServerModal';
 import { SshCredentialModal } from './SshCredentialModal';
 import {
