@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
+  --bg-main: #0B0F17;
+  --bg-card: #121824;
+  --bg-card-hover: #192233;
+  --border-color: #212D42;
+  --accent-primary: #3B82F6;
+  --accent-success: #10B981;
+  --accent-warning: #F59E0B;
+  --accent-danger: #EF4444;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-main);
+  color: #F3F4F6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.glass-panel {
+  background: rgba(18, 24, 36, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.glass-card {
+  background: rgba(25, 34, 51, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+.glass-card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
