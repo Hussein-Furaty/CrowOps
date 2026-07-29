@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,46 +59,110 @@ public class ServerController {
         return serverInfoService.fetchSystemInfo(id);
     }
 
-    /** Tail system journal / syslog — last N lines (default 100) */
+    /** System logs — last N lines */
     @GetMapping("/{id}/logs")
     public Map<String, String> getLogs(
             @PathVariable Long id,
-            @RequestParam(defaultValue = "100") int lines) {
-        String cmd = "journalctl -n " + lines + " --no-pager 2>/dev/null || tail -n " + lines + " /var/log/syslog 2>/dev/null || tail -n " + lines + " /var/log/messages 2>/dev/null || echo 'No log source available'";
-        String output = serverInfoService.executeRemoteCommand(id, cmd);
+            @RequestParam(defaultValue = "60") int lines) {
+        // Try journalctl first, fall back to syslog/messages
+        String output = serverInfoService.executeRemoteCommand(id,
+            "journalctl -n " + lines + " --no-pager --output=short-iso 2>/dev/null"
+            + " || tail -n " + lines + " /var/log/syslog 2>/dev/null"
+            + " || tail -n " + lines + " /var/log/messages 2>/dev/null"
+            + " || echo 'No log source available'");
         return Map.of("logs", output);
     }
 
-    /** List listening ports — returns CSV: proto,state,localAddr,port,process */
+    /**
+     * Listening sockets — returns CSV header + rows.
+     * Parsing is done in Java to avoid complex awk quoting over SSH.
+     * Header: proto,state,localAddr,port,process
+     */
     @GetMapping("/{id}/ports")
     public Map<String, String> getOpenPorts(@PathVariable Long id) {
-        // Output header + CSV rows: proto,state,localAddr,port,process
-        String cmd = "echo 'proto,state,localAddr,port,process' && " +
-            "ss -tlnup 2>/dev/null | awk 'NR>1 && NF>=5 {" +
-            "  split($5,a,\":\"); port=a[length(a)]; addr=\"\"; for(i=1;i<length(a);i++) addr=addr a[i]; " +
-            "  gsub(/users:\\(|\\)\/|[()]/,\"\",$7); " +
-            "  print $1\",\"$2\",\"addr\",\"port\",\"$7" +
-            "}'";
-        String output = serverInfoService.executeRemoteCommand(id, cmd);
-        return Map.of("ports", output.trim());
+        // Simple command — just dump ss output, parse in Java
+        String raw = serverInfoService.executeRemoteCommand(id,
+            "ss -tlnup 2>/dev/null || netstat -tlnup 2>/dev/null || echo 'N/A'");
+
+        List<String> csvLines = new ArrayList<>();
+        csvLines.add("proto,state,localAddr,port,process");
+
+        for (String line : raw.split("\n")) {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith("Netid") || line.startsWith("Proto") || line.equals("N/A")) continue;
+
+            String[] parts = line.split("\\s+");
+            if (parts.length < 5) continue;
+
+            String proto = parts[0];
+            String state = parts[1];
+            String localFull = parts[4]; // e.g. "0.0.0.0:22" or "[::]:80"
+
+            // Extract port from last colon
+            int colonIdx = localFull.lastIndexOf(':');
+            String localAddr = colonIdx > 0 ? localFull.substring(0, colonIdx) : localFull;
+            String port     = colonIdx > 0 ? localFull.substring(colonIdx + 1) : "";
+
+            // Process field (column 6 in ss -tlnup)
+            String process = parts.length > 6 ? parts[6] : "";
+            // Clean up ss process field: users:(("sshd",pid=1234,...))
+            process = process.replaceAll("users:\\(\\(\"([^\"]+)\".*?\\)\\)", "$1")
+                             .replaceAll("users:\\(.*?\\)", "")
+                             .trim();
+
+            csvLines.add(proto + "," + state + "," + localAddr + "," + port + "," + process);
+        }
+
+        return Map.of("ports", String.join("\n", csvLines));
     }
 
-    /** List top 20 processes by CPU — returns CSV: user,pid,cpu,mem,vsz,rss,stat,command */
+    /**
+     * Top 20 processes by CPU — returns CSV header + rows.
+     * Parsing done in Java for safety.
+     * Header: user,pid,cpu,mem,command
+     */
     @GetMapping("/{id}/processes")
     public Map<String, String> getProcesses(@PathVariable Long id) {
-        String cmd = "echo 'user,pid,cpu,mem,vsz,rss,stat,command' && " +
-            "ps aux --sort=-%cpu 2>/dev/null | tail -n +2 | head -20 | " +
-            "awk '{cmd=\"\"; for(i=11;i<=NF;i++) cmd=cmd\" \"$i; gsub(/^[[:space:]]*/,\"\",cmd); print $1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$8\",\"cmd}'";
-        String output = serverInfoService.executeRemoteCommand(id, cmd);
-        return Map.of("processes", output.trim());
+        String raw = serverInfoService.executeRemoteCommand(id,
+            "ps aux --sort=-%cpu 2>/dev/null | head -21"
+            + " || ps aux 2>/dev/null | head -21"
+            + " || echo 'N/A'");
+
+        List<String> csvLines = new ArrayList<>();
+        csvLines.add("user,pid,cpu%,mem%,vsz,rss,stat,command");
+
+        boolean firstLine = true;
+        for (String line : raw.split("\n")) {
+            line = line.trim();
+            if (line.isEmpty() || line.equals("N/A")) continue;
+            if (firstLine) { firstLine = false; continue; } // skip header from ps
+
+            String[] parts = line.split("\\s+", 11);
+            if (parts.length < 11) continue;
+
+            String user    = parts[0];
+            String pid     = parts[1];
+            String cpu     = parts[2];
+            String mem     = parts[3];
+            String vsz     = parts[4];
+            String rss     = parts[5];
+            String stat    = parts[7];
+            String command = parts[10].length() > 60 ? parts[10].substring(0, 60) + "…" : parts[10];
+
+            // Escape commas in command
+            command = command.replace(",", ";");
+            csvLines.add(user + "," + pid + "," + cpu + "," + mem + "," + vsz + "," + rss + "," + stat + "," + command);
+        }
+
+        return Map.of("processes", String.join("\n", csvLines));
     }
 
-    /** Execute a safe shell action: reboot, shutdown, or any custom command */
+    /** Execute a power action or service restart via SSH */
     @PostMapping("/{id}/action")
     public Map<String, String> executeAction(
             @PathVariable Long id,
             @RequestBody RemoteCommandRequest request) {
         String output = serverInfoService.executeRemoteCommand(id, request.getCommand());
-        return Map.of("result", output);
+        return Map.of("result", output.isEmpty() ? "Command sent successfully." : output);
     }
 }
