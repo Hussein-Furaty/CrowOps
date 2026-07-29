@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreateServerPayload } from '../types';
+import type { CreateServerPayload } from '../types';
 import { X, Server } from 'lucide-react';
 
 interface AddServerModalProps {

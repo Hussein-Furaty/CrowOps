@@ -1,4 +1,4 @@
-export interface UserResponse {
+export type UserResponse = {
   id: number;
   firstName: string;
   lastName: string;
@@ -8,9 +8,9 @@ export interface UserResponse {
   locked: boolean;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface ServerResponse {
+export type ServerResponse = {
   id: number;
   name: string;
   hostname: string;
@@ -22,9 +22,9 @@ export interface ServerResponse {
   enabled: boolean;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface CreateServerPayload {
+export type CreateServerPayload = {
   name: string;
   hostname: string;
   ipAddress: string;
@@ -32,9 +32,9 @@ export interface CreateServerPayload {
   os?: string;
   architecture?: string;
   description?: string;
-}
+};
 
-export interface SshCredentialStatus {
+export type SshCredentialStatus = {
   id: number;
   serverId: number;
   username: string;
@@ -43,17 +43,17 @@ export interface SshCredentialStatus {
   hasPrivateKey: boolean;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface SaveSshCredentialPayload {
+export type SaveSshCredentialPayload = {
   username: string;
   authType: 'PASSWORD' | 'KEY';
   password?: string;
   privateKey?: string;
   passphrase?: string;
-}
+};
 
-export interface ServerSystemInfo {
+export type ServerSystemInfo = {
   serverId: number;
   hostname: string;
   osInfo: string;
@@ -66,4 +66,4 @@ export interface ServerSystemInfo {
   loadAverage: string;
   openPorts: string;
   processCount: number;
-}
+};
