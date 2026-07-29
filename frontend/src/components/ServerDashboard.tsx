@@ -6,7 +6,7 @@ import { SshCredentialModal } from './SshCredentialModal';
 import { ServerDetailsModal } from './ServerDetailsModal';
 import {
   Server as ServerIcon, Plus, RefreshCw, LogOut, Key, Wifi, Trash2, Cpu, HardDrive, Activity, 
-  CheckCircle, XCircle, Clock, ChevronRight, Settings
+  CheckCircle, XCircle, Clock, Settings
 } from 'lucide-react';
 
 interface ServerDashboardProps {
