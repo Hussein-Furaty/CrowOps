@@ -109,7 +109,7 @@ export const ServerDetailsModal: React.FC<ServerDetailsModalProps> = ({ server, 
     };
 
     fetch();
-    const id = setInterval(fetch, 5000);
+    const id = setInterval(fetch, 1000);
     return () => { active = false; clearInterval(id); };
   }, [isOpen, server, activeTab]);
 
@@ -239,8 +239,8 @@ export const ServerDetailsModal: React.FC<ServerDetailsModalProps> = ({ server, 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                   <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Live Server Metrics</h3>
                   <span style={{ fontSize: '0.78rem', color: 'var(--status-success)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                    <span style={{ width: '7px', height: '7px', background: 'var(--status-success)', borderRadius: '50%', display: 'inline-block', animation: 'pulse-soft 2s infinite' }} />
-                    Auto-refresh every 5s
+                    <span style={{ width: '7px', height: '7px', background: 'var(--status-success)', borderRadius: '50%', display: 'inline-block', animation: 'pulse-soft 1s infinite' }} />
+                    Live Update (1s)
                   </span>
                 </div>
 

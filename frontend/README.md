@@ -1,32 +1,44 @@
-# React + TypeScript + Vite
+# CrowOps Frontend Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The official web frontend for the **CrowOps** infrastructure management platform. Built with a modern tech stack to deliver a fast, responsive, and beautiful user experience.
 
-Currently, two official plugins are available:
+## 🚀 Tech Stack
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Language**: TypeScript
+- **Styling**: Vanilla CSS with custom Glassmorphism Design System
+- **Icons**: Lucide React
+- **HTTP Client**: Axios
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
+- **Live Server Metrics**: Real-time polling (1s intervals) of CPU, RAM, Disk, Uptime, and Network statistics.
+- **Process Monitoring**: View top CPU-consuming processes fetched directly via SSH.
+- **Network Analysis**: Inspect active listening TCP/UDP ports.
+- **Power Actions**: Perform server reboots, shutdowns, and restart common services.
+- **Premium UI**: Custom-built CSS variables system with dark mode, animations, and glass effects.
 
-## React Compiler
+## 📦 Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+Make sure you have Node.js 20+ installed.
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+### Installation
+```bash
+npm install
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### Development Server
+```bash
+npm run dev
+```
+The application will be available at `http://localhost:5173`. It expects the Spring Boot backend to be running on `http://localhost:8081`.
+
+### Production Build
+```bash
+npm run build
+```
+This generates a production-ready bundle in the `dist` folder.
+
+## 🐳 Docker Deployment
+A multi-stage `Dockerfile` is provided that builds the Vite app and serves it using Nginx on port 80.
+It is recommended to deploy using the `docker-compose.yml` located in the root of the project.

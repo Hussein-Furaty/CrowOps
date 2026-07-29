@@ -7,11 +7,12 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 21">
-  <img src="https://img.shields.io/badge/Spring%20Boot-4.1-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Spring%20Boot-3.2-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React">
+  <img src="https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite">
   <img src="https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/Docker-Supported-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Status-v0.1.0%20(MVP%20Released)-green?style=for-the-badge" alt="Status">
+  <img src="https://img.shields.io/badge/Status-v0.2.0%20(Live%20Dashboard)-green?style=for-the-badge" alt="Status">
 </p>
 
 ---
@@ -26,13 +27,14 @@ Instead of managing multiple machines through separate SSH sessions and scattere
 
 ## 🎯 Features (v0.1.0 MVP)
 
-- **Authentication & Security**: JWT stateless authentication with BCrypt password hashing and custom user details security integration.
-- **User Management**: Create and list users with DTO isolation and validation.
-- **Server Administration**: Complete CRUD API for managing server instances with IP address uniqueness checks.
+- **Authentication & Security**: JWT stateless authentication with BCrypt password hashing.
+- **Modern Live Dashboard**: A premium, React-based (Vite/TypeScript) glassmorphism dashboard.
+- **Server Administration**: Complete CRUD API for managing server instances.
 - **SSH Credential Management**: Encapsulated One-to-One credential linking per server supporting PASSWORD and KEY auth types.
-- **SSH Connectivity & Diagnostics**: Real-time SSH connection testing (`JSch`) and live hardware metrics extraction (CPU, RAM, Disk, Uptime, OS).
-- **Global Error Handling**: Standardized structured JSON error responses across all API endpoints.
-- **Container Readiness**: Multi-stage `Dockerfile` and `docker-compose.yml` for instant zero-config deployment.
+- **Live Diagnostics (1s Polling)**: Real-time system metrics (CPU, RAM, Disk, Uptime, Load Average, Network I/O).
+- **Process & Network Monitoring**: View active TCP/UDP ports and top CPU-consuming processes.
+- **Power Actions**: Reboot, Shutdown, or restart popular services directly from the dashboard.
+- **Container Readiness**: Multi-stage `Dockerfile` and `docker-compose.yml` for full-stack deployment (Nginx/React + Spring Boot + Postgres).
 
 ---
 
@@ -46,7 +48,7 @@ Ensure Docker Desktop is installed and running, then execute:
 docker-compose up --build -d
 ```
 
-The API will be available at `http://localhost:8081`.
+The frontend application will be available at `http://localhost`, and the API at `http://localhost:8081`.
 
 ### Option 2: Local Development Setup
 
