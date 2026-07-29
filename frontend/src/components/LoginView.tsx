@@ -43,45 +43,32 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'radial-gradient(circle at top, #1E293B 0%, #0B0F17 100%)',
       padding: '1.5rem'
     }}>
-      <div className="glass-panel" style={{ width: '100%', maxWidth: '420px', padding: '2.5rem' }}>
+      <div className="glass-panel animate-fade-in" style={{ width: '100%', maxWidth: '420px', padding: '2.5rem' }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '56px',
-            height: '56px',
-            borderRadius: '14px',
-            background: 'rgba(59, 130, 246, 0.15)',
-            border: '1px solid rgba(59, 130, 246, 0.3)',
-            marginBottom: '1rem',
-            color: '#60A5FA'
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '64px', height: '64px', borderRadius: '16px',
+            background: 'var(--brand-gradient)',
+            boxShadow: 'var(--shadow-glow)',
+            marginBottom: '1.5rem', color: 'white'
           }}>
-            <Terminal size={28} />
+            <Terminal size={32} />
           </div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.5rem 0', color: '#F8FAFC' }}>
-            CrowOps Platform
+          <h2 className="text-gradient" style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 0.5rem 0' }}>
+            CrowOps
           </h2>
-          <p style={{ color: '#94A3B8', fontSize: '0.875rem', margin: 0 }}>
-            Enterprise Infrastructure & Server Management
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0 }}>
+            Enterprise Infrastructure Management
           </p>
         </div>
 
         {error && (
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-            padding: '0.875rem 1rem',
-            background: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: '8px',
-            color: '#FCA5A5',
-            fontSize: '0.875rem',
-            marginBottom: '1.5rem'
+            display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem',
+            background: 'var(--status-danger-bg)', border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: '8px', color: 'var(--status-danger)', fontSize: '0.9rem', marginBottom: '1.5rem'
           }}>
             <AlertCircle size={18} style={{ flexShrink: 0 }} />
             <span>{error}</span>
@@ -90,76 +77,36 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#CBD5E1', marginBottom: '0.5rem' }}>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
               Username
             </label>
             <div style={{ position: 'relative' }}>
-              <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+              <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
               <input
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="text" required value={username} onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.75rem 0.75rem 2.5rem',
-                  background: '#0F172A',
-                  border: '1px solid #334155',
-                  borderRadius: '8px',
-                  color: '#F8FAFC',
-                  fontSize: '0.925rem',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
+                className="input-field"
+                style={{ paddingLeft: '2.5rem' }}
               />
             </div>
           </div>
 
-          <div style={{ marginBottom: '1.75rem' }}>
-            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: '#CBD5E1', marginBottom: '0.5rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
+            <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
               Password
             </label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748B' }} />
+              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-tertiary)' }} />
               <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.75rem 0.75rem 2.5rem',
-                  background: '#0F172A',
-                  border: '1px solid #334155',
-                  borderRadius: '8px',
-                  color: '#F8FAFC',
-                  fontSize: '0.925rem',
-                  outline: 'none',
-                  boxSizing: 'border-box'
-                }}
+                className="input-field"
+                style={{ paddingLeft: '2.5rem' }}
               />
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: 600,
-              fontSize: '0.95rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.7 : 1,
-              transition: 'all 0.2s ease'
-            }}
-          >
+          <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', fontSize: '1rem', padding: '0.8rem' }}>
             {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
           </button>
         </form>
