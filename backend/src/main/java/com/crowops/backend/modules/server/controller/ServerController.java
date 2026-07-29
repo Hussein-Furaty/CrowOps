@@ -68,20 +68,28 @@ public class ServerController {
         return Map.of("logs", output);
     }
 
-    /** List listening ports with process info */
+    /** List listening ports — returns CSV: proto,state,localAddr,port,process */
     @GetMapping("/{id}/ports")
     public Map<String, String> getOpenPorts(@PathVariable Long id) {
-        String cmd = "ss -tlnup 2>/dev/null || netstat -tlnup 2>/dev/null || echo 'N/A'";
+        // Output header + CSV rows: proto,state,localAddr,port,process
+        String cmd = "echo 'proto,state,localAddr,port,process' && " +
+            "ss -tlnup 2>/dev/null | awk 'NR>1 && NF>=5 {" +
+            "  split($5,a,\":\"); port=a[length(a)]; addr=\"\"; for(i=1;i<length(a);i++) addr=addr a[i]; " +
+            "  gsub(/users:\\(|\\)\/|[()]/,\"\",$7); " +
+            "  print $1\",\"$2\",\"addr\",\"port\",\"$7" +
+            "}'";
         String output = serverInfoService.executeRemoteCommand(id, cmd);
-        return Map.of("ports", output);
+        return Map.of("ports", output.trim());
     }
 
-    /** List top processes by CPU */
+    /** List top 20 processes by CPU — returns CSV: user,pid,cpu,mem,vsz,rss,stat,command */
     @GetMapping("/{id}/processes")
     public Map<String, String> getProcesses(@PathVariable Long id) {
-        String cmd = "ps aux --sort=-%cpu 2>/dev/null | head -20 || echo 'N/A'";
+        String cmd = "echo 'user,pid,cpu,mem,vsz,rss,stat,command' && " +
+            "ps aux --sort=-%cpu 2>/dev/null | tail -n +2 | head -20 | " +
+            "awk '{cmd=\"\"; for(i=11;i<=NF;i++) cmd=cmd\" \"$i; gsub(/^[[:space:]]*/,\"\",cmd); print $1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$8\",\"cmd}'";
         String output = serverInfoService.executeRemoteCommand(id, cmd);
-        return Map.of("processes", output);
+        return Map.of("processes", output.trim());
     }
 
     /** Execute a safe shell action: reboot, shutdown, or any custom command */
