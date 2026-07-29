@@ -37,26 +37,35 @@ Built with **Clean Architecture** on the backend and a premium **Glassmorphism U
 
 ---
 
-## 🚀 Quick Start (Docker)
+## 🚀 Quick Start
 
-Deploying CrowOps is incredibly simple thanks to the included `docker-compose.yml`.
+Deploying CrowOps is incredibly simple. We offer a pre-built production setup that does not require downloading any source code.
 
 ### Prerequisites
 - Docker & Docker Compose installed on your machine.
 
-### Deployment Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Hussein-Furaty/CrowOps.git
-   cd CrowOps
-   ```
-2. Run the platform in the background:
-   ```bash
-   docker-compose up --build -d
-   ```
-3. Access the platform:
-   - **Frontend UI:** `http://localhost`
-   - **Backend API:** `http://localhost:8081`
+### Option 1: Production Deployment (Recommended)
+Download the production compose file and run it:
+```bash
+# Download the docker-compose file
+curl -O https://raw.githubusercontent.com/Hussein-Furaty/CrowOps/main/docker-compose.prod.yml
+
+# Start the platform
+docker-compose -f docker-compose.prod.yml up -d
+```
+This will automatically pull the latest pre-built images from our GitHub Container Registry.
+
+### Option 2: Local Development Setup
+If you want to modify the code, clone the repository and build from source:
+```bash
+git clone https://github.com/Hussein-Furaty/CrowOps.git
+cd CrowOps
+docker-compose up --build -d
+```
+
+### Accessing the Platform
+- **Frontend UI:** `http://localhost`
+- **Backend API:** `http://localhost:8081`
 
 > **Note:** On your first login, you will need to register an admin user via the API or use a pre-seeded account (if configured).
 
