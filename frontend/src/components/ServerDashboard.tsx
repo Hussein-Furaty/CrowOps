@@ -5,15 +5,14 @@ import { AddServerModal } from './AddServerModal';
 import { SshCredentialModal } from './SshCredentialModal';
 import { ServerDetailsModal } from './ServerDetailsModal';
 import {
-  Server as ServerIcon, Plus, RefreshCw, LogOut, Key, Wifi, Trash2, Cpu, HardDrive, Activity, 
+  Server as ServerIcon, Plus, RefreshCw, Key, Wifi, Trash2, Cpu, HardDrive, Activity, 
   CheckCircle, XCircle, Clock, Settings
 } from 'lucide-react';
 
 interface ServerDashboardProps {
-  onLogout: () => void;
 }
 
-export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) => {
+export const ServerDashboard: React.FC<ServerDashboardProps> = () => {
   const [servers, setServers] = useState<ServerResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -81,33 +80,7 @@ export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) =>
   };
 
   return (
-    <div style={{ minHeight: '100vh' }}>
-      {/* Top Navbar */}
-      <header style={{
-        background: 'var(--bg-panel)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--border-light)',
-        padding: '1rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        position: 'sticky', top: 0, zIndex: 20
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ padding: '0.5rem', background: 'rgba(99, 102, 241, 0.15)', borderRadius: '10px', color: 'var(--brand-primary)' }}>
-            <ServerIcon size={26} />
-          </div>
-          <div>
-            <h1 className="text-gradient" style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0 }}>CrowOps</h1>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Enterprise Infrastructure</span>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Plus size={18} /> Add Server
-          </button>
-          <button className="btn-secondary" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', border: '1px solid rgba(239, 68, 68, 0.3)', color: 'var(--status-danger)' }}>
-            <LogOut size={16} /> Logout
-          </button>
-        </div>
-      </header>
-
+    <div style={{ minHeight: '100%' }}>
       {/* Main Content */}
       <main style={{ padding: '2.5rem', maxWidth: '1400px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
@@ -115,6 +88,9 @@ export const ServerDashboard: React.FC<ServerDashboardProps> = ({ onLogout }) =>
             <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.25rem 0' }}>Overview</h2>
             <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Managing {servers.length} server instances</p>
           </div>
+          <button className="btn-primary" onClick={() => setIsAddModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginRight: '1rem' }}>
+            <Plus size={16} /> Add Server
+          </button>
           <button className="btn-secondary" onClick={fetchServers} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <RefreshCw size={16} /> Refresh
           </button>
