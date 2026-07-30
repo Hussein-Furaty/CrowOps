@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { LoginView } from './components/LoginView';
 import { ServerDashboard } from './components/ServerDashboard';
+import { UserManagementView } from './components/UserManagement/UserManagementView';
+import { Layout } from './components/Layout';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentView, setCurrentView] = useState<'servers' | 'users'>('servers');
 
   useEffect(() => {
     const token = localStorage.getItem('crowops_token');
@@ -19,10 +22,14 @@ function App() {
     setIsAuthenticated(false);
   };
 
-  return isAuthenticated ? (
-    <ServerDashboard onLogout={handleLogout} />
-  ) : (
-    <LoginView onLoginSuccess={handleLoginSuccess} />
+  if (!isAuthenticated) {
+    return <LoginView onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  return (
+    <Layout currentView={currentView} onNavigate={setCurrentView} onLogout={handleLogout}>
+      {currentView === 'servers' ? <ServerDashboard /> : <UserManagementView />}
+    </Layout>
   );
 }
 
