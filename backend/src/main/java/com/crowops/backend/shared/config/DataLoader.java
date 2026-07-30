@@ -1,6 +1,7 @@
 package com.crowops.backend.shared.config;
 
 import com.crowops.backend.modules.user.entity.User;
+import com.crowops.backend.modules.user.entity.UserRole;
 import com.crowops.backend.modules.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ public class DataLoader implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.setEnabled(true);
             admin.setLocked(false);
+            admin.setRole(UserRole.ADMIN);
             userRepository.save(admin);
             log.info("✅ Default admin user created — username: admin / password: admin");
         } else {

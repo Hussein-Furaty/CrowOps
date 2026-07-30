@@ -1,12 +1,12 @@
 package com.crowops.backend.modules.user.entity;
 
 import com.crowops.backend.shared.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -35,4 +35,17 @@ public class User extends BaseEntity {
 
     @Column(nullable = false)
     private boolean locked = false;
+
+    /**
+     * Role assigned to this user; determines access level within the system.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private UserRole role = UserRole.USER;
+
+    /**
+     * Soft-delete timestamp. Null means the user is active; non-null means deleted.
+     */
+    @Column
+    private LocalDateTime deletedAt;
 }
